@@ -143,11 +143,13 @@ subport ${name}-gst-plugins-base {
 
     # Common feature options
     configure.args-append \
+        -Dexamples=disabled \
         -Dtests=disabled \
         -Dtools=disabled \
         -Dintrospection=disabled \
         -Dnls=disabled \
         -Dorc=enabled \
+        -Dqt5=disabled \
         -Dgobject-cast-checks=disabled \
         -Dglib-asserts=disabled \
         -Dglib-checks=disabled
