@@ -498,7 +498,7 @@ subport ${name}-gst-libav {
 
     depends_lib-append \
         port:${name}-gst-plugins-base \
-        port:ffmpeg
+        port:gst-ffmpeg
 
     depends_build-delete \
         port:gettext
@@ -509,4 +509,7 @@ subport ${name}-gst-libav {
     configure.args-append \
         -Ddoc=disabled \
         -Dtests=disabled
+    
+    configure.env-append \
+        PKG_CONFIG_PATH=${prefix}/lib/gst-ffmpeg/lib/pkgconfig:\$PKG_CONFIG_PATH
 }
