@@ -152,7 +152,8 @@ subport ${name}-gst-plugins-base {
         -Dqt5=disabled \
         -Dgobject-cast-checks=disabled \
         -Dglib-asserts=disabled \
-        -Dglib-checks=disabled
+        -Dglib-checks=disabled \
+        -Dqt5=disabled
 
     # Common options
     configure.args-append \
