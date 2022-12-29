@@ -12,12 +12,12 @@ legacysupport.newest_darwin_requires_legacy 13
 # Must be statically linked or -preloader breaks
 legacysupport.use_static yes
 
-# Keep the wine-stable, wine-devel and wine-staging ports as similar as possible.
+# Keep the wine-stable, wine-devel, wine-staging and wine-crossover ports as similar as possible.
 
 name                        wine-devel
-conflicts                   wine-stable wine-staging
+conflicts                   wine-stable wine-staging wine-crossover
 set my_name                 wine
-version                     8.0-rc1
+version                     8.0-rc2
 revision                    0
 platforms                   {darwin >= 12}
 set branch                  [lindex [split ${version} .] 0].x
@@ -54,9 +54,9 @@ distfiles \
 
 checksums \
     ${wine_distfile} \
-    rmd160  c9d09465f39ea33269a1719afe65cad7b19415f0 \
-    sha256  c0311d763cd89ece6fb80c1e095ba5d95033106367bd1795a69881f8f98becfd \
-    size    48011486
+    rmd160  3ac996dcb10d8f435d8e9146f3fec7cfacf752a6 \
+    sha256  27432ec96502747ae4b819a76f8fc9f5a13c6f69d7dc853848cf4887dcddaad0 \
+    size    48005595
 
 depends_build \
     port:bison \
@@ -82,8 +82,7 @@ depends_run \
     port:mingw-w64-wine-gecko \
     port:mingw-w64-wine-mono
 
-patch.pre_args \
-    -p1
+patch.pre_args -p1
 
 # https://bugs.winehq.org/show_bug.cgi?id=34166#c103
 patchfiles-append \
@@ -157,46 +156,6 @@ configure.args \
     --without-v4l2 \
     --without-x
 
-# winemac.drv is the native display driver, since wine-1.5.26
-variant x11 {
-    depends_lib-append \
-        port:libGLU \
-        port:mesa \
-        port:xorg-libX11 \
-        port:xorg-libXcomposite \
-        port:xorg-libXcursor \
-        port:xorg-libXext \
-        port:xorg-libXi \
-        port:xorg-libXinerama \
-        port:xorg-libXrandr \
-        port:xorg-libXxf86vm \
-        port:xorg-libsm \
-        port:xorg-xorgproto \
-        port:xrender
-
-    configure.args-delete \
-        --without-x
-
-    configure.args-append \
-        --with-osmesa \
-        --with-xcomposite \
-        --with-xcursor \
-        --with-xfixes \
-        --with-xinerama \
-        --with-xinput \
-        --with-xinput2 \
-        --with-xrandr \
-        --with-xrender \
-        --with-xshape \
-        --with-xxf86vm \
-        --with-x \
-        --x-include=${prefix}/include \
-        --x-lib=${prefix}/lib
-}
-
-default_variants \
-    +quartz -sdl -x11
-
 # Set pkgconfig search path
 configure.env.i386-append \
     PKG_CONFIG_LIBDIR=${prefix}/lib/pkgconfig:${prefix}/share/pkgconfig
@@ -255,7 +214,7 @@ subport wine-staging {
     name \
         wine-staging
     conflicts \
-        wine-stable wine-devel
+        wine-stable wine-devel wine-crossover
 
     set staging_version \
         ${version}
@@ -270,9 +229,9 @@ subport wine-staging {
 
     checksums-append \
         ${wine_staging_distfile} \
-        rmd160  9d06d1f07d060d65e905ba4c13b770e175e411a2 \
-        sha256  eca9f21c5895efd9fd8b272669d3c75d6d9e83c67284053c00a8406569921093 \
-        size    9526714
+        rmd160  515c25f3d72c3a55ca477786578e6c9a99983f18 \
+        sha256  93dbe148c953deefce6b925b9b0b7b808027e6ba7e71814c03854cf53e1b71d1 \
+        size    9526926
 
     depends_extract-append \
         port:autoconf
@@ -305,6 +264,8 @@ if {${subport} eq "wine-devel" } {
     }
 }
 
+triplet.add_build           cross
+
 # macports-base injects a number of flags that now propagate to mingw-gcc this causes the build to fail since, wine-7.21
 # https://gitlab.winehq.org/wine/wine/-/commit/b1f59bc679a8c2dea18a6789a5b9b1a1ae825129
 compiler.limit_flags        yes
@@ -331,7 +292,7 @@ post-destroot {
         ${destroot}${docdir}
 }
 
-if {${universal_possible} && [variant_isset universal]} {
+if {[variant_isset universal]} {
     notes-append "
         \n
         Wine supports both 32-bit and 64-bit now. It is compatible with your\
