@@ -48,6 +48,16 @@ variant x11 {
                             --x-libraries=${prefix}/lib
 }
 
+# ships with old config.{guess,sub} that don't recognise darwin arm64;
+# replace with recent versions from automake
+depends_build-append    port:automake
+post-patch {
+    set automake_dirs [glob -directory ${prefix}/share automake-*]
+    set automake_dir [lindex [lsort -command vercmp $automake_dirs] end]
+    copy -force ${automake_dir}/config.guess ${automake_dir}/config.sub \
+        ${worksrcpath}/.auto
+}
+
 livecheck.type      regex
 livecheck.url       ${homepage}downloads.html
 livecheck.regex     "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"

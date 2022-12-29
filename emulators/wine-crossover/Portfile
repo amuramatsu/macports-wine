@@ -231,8 +231,8 @@ destroot.target             install-lib
 if {${os.major} > 18} {
     depends_build-append    port:cx-llvm
 
-    configure.cc            "/usr/bin/env arch -x86_64 ${prefix}/libexec/cx-llvm/bin/clang"
-    configure.cxx           "/usr/bin/env arch -x86_64 ${prefix}/libexec/cx-llvm/bin/clang++"
+    configure.cc            "${prefix}/libexec/cx-llvm/bin/clang -arch x86_64"
+    configure.cxx           "${prefix}/libexec/cx-llvm/bin/clang++ -arch x86_64"
     configure.compiler.add_deps no
     configure.cmd ${worksrcpath}/configure
 
