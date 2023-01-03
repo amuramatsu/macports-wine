@@ -74,11 +74,7 @@ depends_build \
 
 depends_lib \
     port:freetype \
-    port:gnutls \
-    port:gstreamer1 \
-    port:gstreamer1-gst-plugins-base \
-    port:gstreamer1-gst-plugins-good \
-    port:gstreamer1-gst-libav \
+    path:lib/pkgconfig/gnutls.pc:gnutls \
     port:libpcap \
     port:libsdl2
 
@@ -114,7 +110,8 @@ patchfiles-append \
 
 post-patch {
     reinplace -q "s|@@PREFIX@@|${prefix}|g" ${worksrcpath}/dlls/crypt32/unixlib.c
-    reinplace -q "s|(cw)||g" ${worksrcpath}/loader/wine.inf.in
+    reinplace -q "s|;(cw)||g"               ${worksrcpath}/loader/wine.inf.in
+    reinplace -q "/PKG_CONFIG_PATH/d"       ${worksrcpath}/configure
 }
 
 configure.checks.implicit_function_declaration.whitelist-append \
@@ -143,7 +140,7 @@ configure.args \
     --without-gphoto \
     --with-gnutls \
     --without-gssapi \
-    --with-gstreamer \
+    --without-gstreamer \
     --without-inotify \
     --without-krb5 \
     --with-mingw \
@@ -161,10 +158,6 @@ configure.args \
     --without-usb \
     --without-v4l2 \
     --without-x
-
-# Set pkgconfig search path
-configure.env.i386-append \
-    PKG_CONFIG_LIBDIR=${prefix}/lib/pkgconfig:${prefix}/share/pkgconfig
 
 # Standard dlopen() is used so wine(64) no longer finds dylibs, since wine-5.6
 # https://bugs.winehq.org/show_bug.cgi?id=49199
@@ -216,6 +209,23 @@ if {${os.major} < 15} {
 # FSF GCC cannot compile code using Apple's "blocks" language extensions
 compiler.blacklist-append   {*gcc*} {clang < 800} {macports-clang-3.*}
 
+variant gstreamer description {Build ${subport} with gstreamer support} {
+    depends_lib-append \
+        port:gstreamer1 \
+        port:gstreamer1-gst-plugins-base \
+        port:gstreamer1-gst-plugins-good \
+        port:gstreamer1-gst-libav
+    configure.args-replace  --without-gstreamer --with-gstreamer
+}
+
+# Uncomment variant for CX23
+#variant usb description {Build ${subport} with USB support} {
+#    depends_lib-append      port:libusb
+#    configure.args-replace  --without-usb --with-usb
+#}
+
+default_variants-append     +gstreamer
+
 triplet.add_build           cross
 
 # macports-base injects a number of flags that now propagate to mingw-gcc this causes the build to fail since, wine-7.21
@@ -235,17 +245,12 @@ destroot.target             install-lib
 if {${os.major} > 18} {
     depends_build-append    port:cx-llvm
 
+    patchfiles-append       1001-remove-cross_compiling-check.diff
+
     configure.cc            "${prefix}/libexec/cx-llvm/bin/clang -arch x86_64"
     configure.cxx           "${prefix}/libexec/cx-llvm/bin/clang++ -arch x86_64"
     configure.compiler.add_deps no
     configure.cmd ${worksrcpath}/configure
-
-    patchfiles-append       1001-remove-cross_compiling-check.diff
-
-    pre-configure {
-        file mkdir ${worksrcpath}-x86_64
-        file mkdir ${worksrcpath}-i386
-    }
 
     configure.args-append \
         --disable-winedbg
@@ -253,6 +258,11 @@ if {${os.major} > 18} {
     configure.args.i386-append \
         --enable-win32on64 \
         --disable-loader
+
+    pre-configure {
+        file mkdir ${worksrcpath}-x86_64
+        file mkdir ${worksrcpath}-i386
+    }
 
     configure {
         set configure.dir ${worksrcpath}-x86_64

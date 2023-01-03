@@ -1,7 +1,7 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
-PortGroup           muniversal 1.0
+PortGroup           muniversal 1.1
 
 name                libmpeg2
 version             0.5.1
@@ -22,7 +22,8 @@ checksums           rmd160  00b2d669655ed3f7a176f5eecc925045159a0301 \
                     sha256  dee22e893cb5fc2b2b6ebd60b88478ab8556cb3b93f9a0d7ce8f3b61851871d4 \
                     size    524776
 
-patchfiles          universal.patch patch-arm64.diff
+use_autoreconf      yes
+autoreconf.args     -fiv
 
 configure.args      --enable-shared \
                     --disable-sdl \
@@ -46,16 +47,6 @@ variant x11 {
     configure.args-replace  --without-x --with-x
     configure.args-append   --x-includes=${prefix}/include \
                             --x-libraries=${prefix}/lib
-}
-
-# ships with old config.{guess,sub} that don't recognise darwin arm64;
-# replace with recent versions from automake
-depends_build-append    port:automake
-post-patch {
-    set automake_dirs [glob -directory ${prefix}/share automake-*]
-    set automake_dir [lindex [lsort -command vercmp $automake_dirs] end]
-    copy -force ${automake_dir}/config.guess ${automake_dir}/config.sub \
-        ${worksrcpath}/.auto
 }
 
 livecheck.type      regex
