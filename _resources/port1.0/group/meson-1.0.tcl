@@ -24,7 +24,7 @@ depends_skip_archcheck-append \
                             python${py_ver_nodot}
 
 # TODO: --buildtype=plain tells Meson not to add its own flags to the command line. This gives the packager total control on used flags.
-default configure.cmd       {${prefix}/bin/meson}
+default configure.cmd       {${prefix}/bin/meson setup}
 default configure.post_args {[meson::get_post_args]}
 configure.universal_args-delete \
                             --disable-dependency-tracking
@@ -51,13 +51,13 @@ proc meson::get_post_args {} {
         if {[option muniversal.is_cross.[option muniversal.build_arch]]} {
             return "${configure.dir} ${build.dir} --cross-file=[option muniversal.build_arch]-darwin --wrap-mode=[option wrap_mode]"
         } else {
-            return "${configure.dir} ${build.dir} --cross-file=[option muniversal.build_arch]-darwin --wrap-mode=[option wrap_mode]"
+            return "${configure.dir} ${build.dir} --wrap-mode=[option wrap_mode]"
         }
     } elseif {[info exists muniversal.current_arch]} {
         # muniversal 1.0 PG is being used
         return "${configure.dir} ${build_dir}-${muniversal.current_arch} --cross-file=${muniversal.current_arch}-darwin --wrap-mode=[option wrap_mode]"
     } else {
-        return "${configure.dir} ${build_dir} --cross-file=${muniversal.current_arch}-darwin --wrap-mode=[option wrap_mode]"
+        return "${configure.dir} ${build_dir} --wrap-mode=[option wrap_mode]"
     }
 }
 

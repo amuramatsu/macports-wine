@@ -6,7 +6,8 @@ The provided Ports *should* compile on Mac OSX 10.8 and later.
 - `crossovertricks`         *(winetricks wrapper for CrossOver)*
 - `CrossOver`               *(22.0.1)*
 - `cx-llvm`                 *(CodeWeavers custom compiler for -mwine32 targets)*
-- `gstreamer1`              *(1.20.4)*
+- `gl-headers`              *(2019.1.0)*
+- `gstreamer1`              *(1.20.5)*
 - `MacOSX.sdk`              *(Multiple MacOSX SDKs)*
 - `mingw-w64-wine-gecko`    *(Multiple versions)*
 - `mingw-w64-wine-mono`     *(Multiple versions)*
@@ -14,8 +15,8 @@ The provided Ports *should* compile on Mac OSX 10.8 and later.
 - `MoltenVK`                *(v1.2.1)*
 - `wine-crossover`          *(v22.0.1)*
 - `wine-stable`             *(v7.0.1)*
-- `wine-devel`              *(v8.0-rc2)*
-- `wine-staging`            *(v8.0-rc2)*
+- `wine-devel`              *(v8.0-rc3)*
+- `wine-staging`            *(v8.0-rc3)*
 - `winetricks`              *(v20221022)*
 - `x86_64-w64-mingw32-dxvk` *(v1.10.3)*
 
