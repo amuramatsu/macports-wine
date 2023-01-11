@@ -4,6 +4,7 @@ PortSystem          1.0
 PortGroup           gitlab 1.0
 PortGroup           meson 1.0
 PortGroup           muniversal 1.1
+proc muniversal::get_triplets {arch} { return "" } ;# This is hack
 
 # Only commit stable updates (even numbered releases)
 gitlab.setup        gstreamer gstreamer 1.20.5
@@ -104,7 +105,7 @@ subport ${name}-gst-plugins-base {
         ${worksrcpath}/subprojects/gst-plugins-base
 
     depends_build-append \
-        port:gl-headers
+        path:include/GL/glext.h:gl-headers
 
     depends_lib-append \
         port:${name} \
