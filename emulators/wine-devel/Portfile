@@ -1,23 +1,23 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem                  1.0
-PortGroup                   muniversal 1.1
 PortGroup                   compiler_blacklist_versions 1.0
 PortGroup                   legacysupport 1.1
+PortGroup                   muniversal 1.1
 
 # ntdll requires fstatat, since wine-5.9
 # https://github.com/wine-staging/wine-staging/commit/762c0e704003f802a5f3470aedd80799cb18c9ef
 legacysupport.newest_darwin_requires_legacy 13
 
-# Must be statically linked or -preloader breaks
+# Must be statically linked or wine(64)-preloader breaks
 legacysupport.use_static yes
 
-# Keep the wine-stable, wine-devel, wine-staging and wine-crossover ports as similar as possible.
+# Keep the wine-stable, wine-devel and wine-crossover portfiles as similar as possible.
 
 name                        wine-devel
 conflicts                   wine-stable wine-staging wine-crossover
 set my_name                 wine
-version                     8.0-rc5
+version                     8.1
 revision                    0
 platforms                   {darwin >= 12}
 set branch                  [lindex [split ${version} .] 0].x
@@ -54,9 +54,9 @@ distfiles \
 
 checksums \
     ${wine_distfile} \
-    rmd160  79e282ffe6a06216c56b39d04a9345d9ec305029 \
-    sha256  414b9ad3ff3093c03812b2f2759e9c7776e1355135aabd5b3f525b6ff8982ad0 \
-    size    48010471
+    rmd160  57c7fbb318281b117e157ab2b41c911d6f6a5a7e \
+    sha256  df3aa58304bf7fdacc0eb9f0fbe09a1f15e0a29a0ecf93886941e901c5418f3c \
+    size    48058675
 
 depends_build \
     port:bison \
@@ -105,6 +105,7 @@ if {${os.major} < 14} {
 }
 
 post-patch {
+    # https://gitlab.winehq.org/wine/wine/-/commit/c7a97b5d5d56ef00a0061b75412c6e0e489fdc99
     reinplace -q "/PKG_CONFIG_LIBDIR/d"     ${worksrcpath}/configure
     reinplace -q "s|@@PREFIX@@|${prefix}|g" ${worksrcpath}/dlls/crypt32/unixlib.c
 }
@@ -121,6 +122,12 @@ configure.checks.implicit_function_declaration.whitelist-append \
 # http://bugs.winehq.org/show_bug.cgi?id=35310
 configure.install \
     ${worksrcpath}/tools/install-sh
+
+configure.pre_args.i386 \
+    --with-wine64=${workpath}/${worksrcdir}-x86_64
+
+configure.pre_args.x86_64 \
+    --enable-win64
 
 configure.args \
     --without-alsa \
@@ -154,7 +161,7 @@ configure.args \
     --without-v4l2 \
     --without-x
 
-# Set the default pkgconfig path for Macports 
+# Set the default pkgconfig path for Macports
 configure.pkg_config_path \
     ${prefix}/lib/pkgconfig:${prefix}/share/pkgconfig
 
@@ -163,45 +170,41 @@ configure.pkg_config_path \
 configure.ldflags-append \
     -Wl,-rpath,${prefix}/lib
 
-configure.args.i386-append \
-    --with-wine64=${workpath}/${worksrcdir}-x86_64 \
-    --without-vulkan
-
-configure.args.x86_64-append \
-    --enable-win64
-
 if {([llength ${supported_archs}] > 1) && (${os.major} < 19)} {
     default_variants +universal
 }
 
-# Avoid weird linker errors with Xcode 10 and later
 if {${os.major} > 18} {
+    # Avoid weird linker errors with Xcode 10 and later
     macosx_deployment_target 10.14
+
+    # Build i386 & x86_64 PE binaries for WoW64
+    configure.pre_args.x86_64-append    --enable-archs=i386,x86_64
 }
 
 # Vulkan is supported on macOS through MoltenVK, since wine-3.13
 if {${os.major} >= 15} {
-    depends_lib-append \
-        path:lib/libMoltenVK.dylib:MoltenVK
-
+    depends_lib-append      path:lib/libMoltenVK.dylib:MoltenVK
     if {"i386" in ${configure.universal_archs}} {
         depends_skip_archcheck-append MoltenVK
     }
-
-    configure.args.x86_64-append \
-        --with-vulkan \
-        ac_cv_lib_soname_MoltenVK=libMoltenVK.dylib \
-        ac_cv_lib_soname_vulkan=
+    configure.args.i386     --without-vulkan
+    configure.args.x86_64   --with-vulkan
+    configure.env.x86_64    ac_cv_lib_soname_vulkan=
+} else {
+    configure.args-append   --without-vulkan
 }
 
 if {${os.major} < 15} {
-    depends_build-append    port:MacOSX10.11.sdk
-    configure.sdkroot       ${prefix}/Developer/SDKs/MacOSX10.11.sdk
-
+    configure.sdk_version   10.11
+    if {${configure.sdkroot} eq ""} {
+        depends_build-append    port:MacOSX10.11.sdk
+        configure.sdkroot       ${prefix}/Developer/SDKs/MacOSX10.11.sdk
+    }
     # Avoid linking Metal or rev-upgrade will cry
     # Support GPU initialization via Metal, since wine-4.15
     # https://gitlab.winehq.org/wine/wine/-/commit/0699089f0ea65c8d66b2cdcdb0731c432720969e
-    configure.args-append   ac_cv_header_Metal_Metal_h=
+    configure.env-append    ac_cv_header_Metal_Metal_h=
 }
 
 # wine requires clang >= 3.8
@@ -227,9 +230,9 @@ subport wine-staging {
 
     checksums-append \
         ${wine_staging_distfile} \
-        rmd160  7aafed5e38dc968ee7f6e1a0168c71278e8c4cae \
-        sha256  d7dd6806ae0ad9695bdafe0b80ca2385a9e02ac921df45d3b6d512ff409cd92d \
-        size    9529588
+        rmd160  57d1bdfbeda120ad14a7935ac261dc7f18aeaca5 \
+        sha256  b2c50878e48cd69d5cd1e4cbf5f19d4af10a56db42932aacb8f6316a25c639af \
+        size    9527176
 
     depends_extract-append \
         port:autoconf
@@ -257,17 +260,6 @@ variant gstreamer description {Build ${subport} with gstreamer support} {
 variant usb description {Build ${subport} with USB support} {
     depends_lib-append      port:libusb
     configure.args-replace  --without-usb --with-usb
-}
-
-if {${subport} eq "wine-devel" } {
-    # Unmerged wow64 patches, make a none default variant
-    # https://gitlab.winehq.org/jacek/wine/-/tree/wow
-    if {${universal_possible} && ![variant_isset universal] || ${os.major} > 18} {
-        variant wow description {Build ${subport} with wow64} {
-            patchfiles-append               2001-wow.diff
-            configure.args.x86_64-append    --enable-archs=i386,x86_64
-        }
-    }
 }
 
 default_variants-append     +gstreamer
@@ -301,7 +293,7 @@ post-destroot {
         ${destroot}${docdir}
 }
 
-if {[variant_isset universal]} {
+if {[option universal_possible] && [variant_isset universal]} {
     notes-append "
         \n
         Wine supports both 32-bit and 64-bit now. It is compatible with your\
@@ -315,6 +307,10 @@ if {[variant_isset universal]} {
 
         See the Wine FAQ for details: https://wiki.winehq.org/FAQ#Wineprefixes
     "
+}
+
+platform darwin arm {
+    configure.pre_args.x86_64-prepend [muniversal::get_triplets x86_64]
 }
 
 livecheck.url               ${homepage}

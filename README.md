@@ -13,11 +13,11 @@ The provided Ports *should* compile on Mac OSX 10.8 and later.
 - `mingw-w64-wine-gecko`    *(Multiple versions)*
 - `mingw-w64-wine-mono`     *(Multiple versions)*
 - `mingw-w64-pkgconfig`
-- `MoltenVK`                *(v1.2.1)*
+- `MoltenVK`                *(v1.2.2)*
 - `wine-crossover`          *(v22.0.1)*
-- `wine-stable`             *(v7.0.1)*
-- `wine-devel`              *(v8.0-rc5)*
-- `wine-staging`            *(v8.0-rc5)*
+- `wine-stable`             *(v8.0)*
+- `wine-devel`              *(v8.1)*
+- `wine-staging`            *(v8.1)*
 - `winetricks`              *(v20221022)*
 
 ## How to use this repository
