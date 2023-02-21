@@ -166,14 +166,9 @@ configure.args \
     --without-v4l2 \
     --without-x
 
-# Set the default pkgconfig path for Macports
-configure.pkg_config_path \
-    ${prefix}/lib/pkgconfig:${prefix}/share/pkgconfig
-
 # Standard dlopen() is used so wine(64) no longer finds dylibs, since wine-5.6
 # https://bugs.winehq.org/show_bug.cgi?id=49199
-configure.ldflags-append \
-    -Wl,-rpath,${prefix}/lib
+configure.ldflags-append    -Wl,-rpath,${prefix}/lib
 
 if {([llength ${supported_archs}] > 1) && (${os.major} < 19)} {
     default_variants +universal
@@ -213,7 +208,13 @@ if {${os.major} < 15} {
 # FSF GCC cannot compile code using Apple's "blocks" language extensions
 compiler.blacklist-append   {*gcc*} {clang < 800} {macports-clang-3.*}
 
-variant gstreamer description {Build ${subport} with gstreamer support} {
+# Uncomment variant for CX23
+#variant gphoto description {Build ${subport} with support for digital cameras} {
+#    depends_lib-append      port:libgphoto2
+#    configure.args-replace  --without-gphoto --with-gphoto
+#}
+
+variant gstreamer description {Build ${subport} with GStreamer, for multimedia support} {
     depends_lib-append      port:gstreamer1-gst-plugins-good port:gstreamer1-gst-libav
     configure.args-replace  --without-gstreamer --with-gstreamer
 }
