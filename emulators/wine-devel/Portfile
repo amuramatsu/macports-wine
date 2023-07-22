@@ -89,10 +89,6 @@ patchfiles-append \
 patchfiles-append \
     0002-crypt32-expand-cert-search-paths.diff
 
-# CW HACK 18311: Use VK on 64-bit macOS for d3d10/11
-patchfiles-append \
-    0003-CW-HACK-18311.diff
-
 if {${os.major} >= 23} {
     patchfiles-append       0004-preloader-sonoma.diff
 }
@@ -260,6 +256,11 @@ variant gphoto description {Build ${subport} with support for digital cameras} {
 variant gstreamer description {Build ${subport} with GStreamer, for multimedia support} {
     depends_lib-append      port:gstreamer1-gst-plugins-good port:gstreamer1-gst-libav
     configure.args-replace  --without-gstreamer --with-gstreamer
+}
+
+variant pcsclite description {Build ${subport} with pcsclite, to support smart card & smart card readers} {
+    depends_lib-append      port:pcsclite
+    configure.args-replace  --without-pcsclite --with-pcsclite
 }
 
 # wine(64)-preloader claims usb interface for no reason
