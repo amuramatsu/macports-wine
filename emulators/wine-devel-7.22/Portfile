@@ -15,7 +15,7 @@ legacysupport.use_static yes
 # Keep the wine-stable, wine-devel and wine-staging ports as similar as possible.
 
 name                        wine-devel-7.22
-conflicts                   wine-stable wine-stable-6.0.4 wine-stable-7.0.2 wine-devel wine-staging wine-staging-7.22
+conflicts                   wine-stable wine-stable-6.0.4 wine-stable-7.0.2 wine-devel wine-staging
 set my_name                 wine
 version                     7.22
 revision                    0
@@ -72,8 +72,8 @@ depends_lib \
 
 depends_run \
     path:share/curl/curl-ca-bundle.crt:curl-ca-bundle \
-    port:mingw-w64-wine-gecko \
-    port:mingw-w64-wine-mono
+    port:mingw-w64-wine-gecko-2.47.3 \
+    port:mingw-w64-wine-mono-7.4.0
 
 patch.pre_args -p1
 
@@ -84,6 +84,10 @@ patchfiles-append \
 # This allows wine to use curl-ca-bundle.crt
 patchfiles-append \
     0002-crypt32-expand-cert-search-paths.diff
+
+# https://bugs.winehq.org/show_bug.cgi?id=54263
+patchfiles-append \
+    0003-MR1921.diff
 
 # layer backed views only works on macOS Yosemite and later, since wine-7.22
 # https://bugs.winehq.org/show_bug.cgi?id=52354
@@ -98,9 +102,9 @@ if {${os.major} < 14} {
 
 post-patch {
     # https://gitlab.winehq.org/wine/wine/-/commit/c7a97b5d5d56ef00a0061b75412c6e0e489fdc99
-    reinplace -q "/PKG_CONFIG_PATH/d"    ${worksrcpath}/configure
-    reinplace -q "/PKG_CONFIG_PATH/d"    ${worksrcpath}/configure.ac
-    reinplace "s|@@PREFIX@@|${prefix}|g" ${worksrcpath}/dlls/crypt32/unixlib.c
+    reinplace -q "/PKG_CONFIG_LIBDIR/d"  ${worksrcpath}/configure
+    reinplace -q "/PKG_CONFIG_LIBDIR/d"  ${worksrcpath}/configure.ac
+    reinplace -q "s|@@PREFIX@@|${prefix}|g" ${worksrcpath}/dlls/crypt32/unixlib.c
 }
 
 configure.checks.implicit_function_declaration.whitelist-append \
@@ -115,6 +119,12 @@ configure.checks.implicit_function_declaration.whitelist-append \
 # http://bugs.winehq.org/show_bug.cgi?id=35310
 configure.install \
     ${worksrcpath}/tools/install-sh
+
+configure.pre_args.i386 \
+    --with-wine64=${workpath}/${worksrcdir}-x86_64
+
+configure.pre_args.x86_64 \
+    --enable-win64
 
 configure.args \
     --without-alsa \
@@ -188,7 +198,7 @@ variant x11 {
 
 # Standard dlopen() is used so wine(64) no longer finds dylibs, since wine-5.6
 # https://bugs.winehq.org/show_bug.cgi?id=49199
-configure.ldflags-append    -Wl,-rpath,${prefix}/lib
+configure.ldflags-append    -Wl,-rpath,${compiler.library_path}
 
 # Vulkan is supported on macOS through MoltenVK, since wine-3.13
 if {${os.major} >= 15} {
@@ -217,41 +227,6 @@ if {${os.major} < 15} {
 # FSF GCC cannot compile code using Apple's "blocks" language extensions
 compiler.blacklist-append   {*gcc*} {clang < 800} {macports-clang-3.*}
 
-subport wine-staging-7.22 {
-    name \
-        wine-staging
-    conflicts \
-        wine-stable wine-stable-6.0.4 wine-stable-7.0.2 wine-devel wine-devel-7.22 wine-staging wine-crossover
-
-    set staging_version \
-        ${version}
-    set wine_staging_distfile \
-        v${staging_version}${extract.suffix}
-
-    master_sites-append \
-        https://github.com/wine-staging/wine-staging/archive/:stagingsource
-
-    distfiles-append \
-        ${wine_staging_distfile}:stagingsource
-
-    checksums-append \
-        ${wine_staging_distfile} \
-        rmd160  17fab6b669588b8240dc250182e0a7e2b03a6c50 \
-        sha256  74104b902d2f60c019c62a15b1f475773f939aedafe05cc937d3ba89973bf00f \
-        size    9528424
-
-    depends_build-append \
-        port:autoconf
-
-    # Running "patchinstall.sh" before patchesfiles that get inherited from wine-devel
-    # "eventfd_synchronization" is disabled as macOS doesn't support eventfd
-    # "winemac.drv-no-flicker-patch" is disabled as the patch gets inherited from wine-devel
-    post-extract {
-        system -W ${workpath}/wine-staging-${staging_version}/patches \
-            "sh patchinstall.sh DESTDIR=${worksrcpath} --all -W eventfd_synchronization -W winemac.drv-no-flicker-patch"
-    }
-}
-
 variant gstreamer description {Build ${subport} with gstreamer support} {
     depends_lib-append      port:gstreamer1-gst-plugins-base
     configure.args-replace  --without-gstreamer --with-gstreamer
@@ -272,6 +247,10 @@ compiler.limit_flags        yes
 muniversal.arch_flag        no
 configure.ldflags-delete    -L${compiler.library_path}
 configure.optflags          -g -O2
+configure.env-append        CROSSCFLAGS=${configure.optflags}
+
+# Reduce compilation warnings
+configure.cflags-append     -Wno-deprecated-declarations
 
 # Were only installing wine not the development files
 destroot.target             install-lib
@@ -302,14 +281,17 @@ if {${universal_possible} && [variant_isset universal]} {
 
         See the Wine FAQ for details: https://wiki.winehq.org/FAQ#Wineprefixes
     "
+} else {
+    supported_archs         i386
+    configure.pre_args.i386
 }
 
 post-deactivate {
-    if {![catch {set installed [lindex [registry_active mingw-w64-wine-gecko] 0]}]} {
-        registry_deactivate_composite mingw-w64-wine-gecko "" [list ports_nodepcheck 1]
+    if {![catch {set installed [lindex [registry_active mingw-w64-wine-gecko-2.47.3] 0]}]} {
+        registry_deactivate_composite mingw-w64-wine-gecko-2.47.3 "" [list ports_nodepcheck 1]
     }
-    if {![catch {set installed [lindex [registry_active mingw-w64-wine-mono] 0]}]} {
-        registry_deactivate_composite mingw-w64-wine-mono "" [list ports_nodepcheck 1]
+    if {![catch {set installed [lindex [registry_active mingw-w64-wine-mono-7.4.0] 0]}]} {
+        registry_deactivate_composite mingw-w64-wine-mono-7.4.0 "" [list ports_nodepcheck 1]
     }
 }
 

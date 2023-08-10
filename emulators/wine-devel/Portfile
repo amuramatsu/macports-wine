@@ -15,7 +15,7 @@ legacysupport.use_static yes
 # Keep the wine-stable, wine-devel and wine-crossover portfiles as similar as possible.
 
 name                        wine-devel
-conflicts                   wine-stable wine-stable-6.0.4 wine-stable-7.0.2 wine-devel-7.22 wine-staging wine-staging-7.22 wine-crossover
+conflicts                   wine-stable wine-stable-6.0.4 wine-stable-7.0.2 wine-devel-7.22 wine-staging wine-crossover
 set my_name                 wine
 version                     8.13
 revision                    0
@@ -60,10 +60,8 @@ checksums \
 
 depends_build \
     port:bison \
-    port:cctools \
     bin:flex:flex \
     port:gettext \
-    port:ld64 \
     port:mingw-w64 \
     port:pkgconfig
 
@@ -103,6 +101,7 @@ if {${os.major} < 14} {
 post-patch {
     # https://gitlab.winehq.org/wine/wine/-/commit/c7a97b5d5d56ef00a0061b75412c6e0e489fdc99
     reinplace -q "/PKG_CONFIG_LIBDIR/d"     ${worksrcpath}/configure
+    reinplace -q "/PKG_CONFIG_LIBDIR/d"     ${worksrcpath}/configure.ac
     reinplace -q "s|@@PREFIX@@|${prefix}|g" ${worksrcpath}/dlls/crypt32/unixlib.c
 }
 
@@ -161,7 +160,7 @@ configure.args \
 
 # Standard dlopen() is used so wine(64) no longer finds dylibs, since wine-5.6
 # https://bugs.winehq.org/show_bug.cgi?id=49199
-configure.ldflags           -Wl,-headerpad_max_install_names -lSystem -Wl,-rpath,${compiler.library_path}
+configure.ldflags-append    -Wl,-rpath,${compiler.library_path}
 
 # ld64 is broken from Xcode15-beta3 so we need to force macports-clang to use ld64-609
 if {${os.major} >= 23} {
@@ -215,7 +214,7 @@ subport wine-staging {
     name \
         wine-staging
     conflicts \
-        wine-stable wine-stable-6.0.4 wine-stable-7.0.2 wine-devel wine-devel-7.22 wine-staging-7.22 wine-crossover
+        wine-stable wine-stable-6.0.4 wine-stable-7.0.2 wine-devel wine-devel-7.22 wine-crossover
 
     set staging_version \
         ${version}
