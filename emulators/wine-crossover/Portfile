@@ -16,7 +16,7 @@ legacysupport.use_static yes
 
 # Crossover-specific bug reports are accepted at info@codeweavers.com
 name                        wine-crossover
-conflicts                   wine-stable wine-stable-6.0.4 wine-stable-7.0.2 wine-devel wine-devel-7.22 wine-staging
+conflicts                   wine-stable wine-stable-6.0.4 wine-stable-7.0.2 wine-devel wine-devel-6.8 wine-devel-7.22 wine-staging
 set my_name                 wine
 version                     22.1.1
 revision                    0
@@ -179,10 +179,6 @@ configure.args \
 # https://bugs.winehq.org/show_bug.cgi?id=49199
 configure.ldflags-append    -Wl,-rpath,${compiler.library_path}
 
-if {([llength ${supported_archs}] > 1) && (${os.major} < 19)} {
-    default_variants +universal
-}
-
 if {${os.major} > 18} {
     # Use an older deployment target to avoid new dyld behaviors.
     macosx_deployment_target 10.14
@@ -234,7 +230,7 @@ variant gstreamer description {Build ${subport} with GStreamer, for multimedia s
 #    configure.args-replace  --without-usb --with-usb
 #}
 
-default_variants-append     +gstreamer
+default_variants            +gstreamer +universal
 
 triplet.add_build           cross
 
