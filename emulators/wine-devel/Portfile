@@ -256,11 +256,6 @@ variant gstreamer description {Build ${subport} with GStreamer, for multimedia s
     configure.args-replace  --without-gstreamer --with-gstreamer
 }
 
-variant pcsclite description {Build ${subport} with pcsclite, to support smart card & smart card readers} {
-    depends_lib-append      port:pcsclite
-    configure.args-replace  --without-pcsclite --with-pcsclite
-}
-
 # wine(64)-preloader claims usb interface for no reason
 # https://github.com/Gcenx/WineskinServer/discussions/280
 variant usb description {Build ${subport} with USB support} {
@@ -279,7 +274,8 @@ muniversal.arch_flag        no
 muniversal.arch_compiler    yes
 configure.ldflags-delete    -L${compiler.library_path}
 configure.optflags          -g -O2
-configure.env-append        CROSSCFLAGS=${configure.optflags}
+configure.env-append        i386_CFLAGS=${configure.optflags}
+configure.env-append        x86_64_CFLAGS=${configure.optflags}
 
 # Reduce compilation warnings
 configure.cflags-append     -Wno-deprecated-declarations
