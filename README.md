@@ -6,10 +6,10 @@ This branch supports macOS 10.8 and later, for 10.6 & 10.7 use the [osx10.6-bran
 - `cctools-973`             *(973.0.1 - Xcode12)*
 - `CrossOver`               *(23.5.0)*
 - `crossovertricks`         *(winetricks wrapper for CrossOver)*
-- `game-porting-toolkit`    *(1.0)*
+- `game-porting-toolkit`    *(1.1)*
 - `gl-headers`              *(2019.1.0)*
-- `gstreamer1`              *(1.22.6)*
-- `gstreamer.framework`     *(1.22.6)*
+- `gstreamer1`              *(1.22.7)*
+- `gstreamer.framework`     *(1.22.7)*
 - `ld64-609`                *(609 - Xcode12)*
 - `libinotify`              *(20230908)*
 - `MacOSX.sdk`              *(Multiple MacOSX SDKs)*
@@ -18,8 +18,8 @@ This branch supports macOS 10.8 and later, for 10.6 & 10.7 use the [osx10.6-bran
 - `mingw-w64-wine-gecko`    *(Multiple versions)*
 - `mingw-w64-wine-mono`     *(Multiple versions)*
 - `wine-stable`             *(v8.0.2)*
-- `wine-devel`              *(v8.20)*
-- `wine-staging`            *(v8.20)*
+- `wine-devel`              *(v8.21)*
+- `wine-staging`            *(v8.21)*
 - `wine-crossover`          *(v22.1.1)*
 - `winetricks`              *(20231004)*
 
