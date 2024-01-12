@@ -11,7 +11,7 @@ name                        wine-crossover
 conflicts                   wine-stable wine-stable-6.0.4 wine-stable-7.0.2 wine-devel wine-devel-6.8 wine-devel-7.22 wine-devel-8.21 wine-staging
 set my_name                 wine
 version                     22.1.1
-revision                    0
+revision                    1
 platforms                   {darwin >= 17}
 license                     LGPL-2.1+
 categories                  emulators
@@ -70,6 +70,7 @@ depends_lib \
     port:libsdl2
 
 depends_run \
+    path:share/curl/curl-ca-bundle.crt:curl-ca-bundle \
     port:mingw-w64-wine-gecko-2.47.2 \
     port:mingw-w64-wine-mono-7.2.0
 
@@ -82,6 +83,10 @@ patch.pre_args -p1
 # Patch provided by Josh Dubois, CrossOver product manager, CodeWeavers
 patchfiles-append \
     0001-distversion.diff
+
+# This allows wine to use curl-ca-bundle.crt
+ patchfiles-append \
+     0002-crypt32-expand-cert-search-paths.diff
 
 # Remove cxmenu functions
 patchfiles-append \
@@ -111,6 +116,7 @@ post-patch {
     # https://gitlab.winehq.org/wine/wine/-/commit/c7a97b5d5d56ef00a0061b75412c6e0e489fdc99
     reinplace -q "/PKG_CONFIG_PATH/d"       ${worksrcpath}/configure
     reinplace -q "s|@@PREFIX@@|${prefix}|g" ${worksrcpath}/dlls/crypt32/unixlib.c
+    reinplace -q "s|;(cw)||g" ${worksrcpath}/loader/wine.inf.in
 }
 
 configure.checks.implicit_function_declaration.whitelist-append \
