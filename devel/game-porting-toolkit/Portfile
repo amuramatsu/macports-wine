@@ -145,6 +145,7 @@ variant gstreamer description {Build ${subport} with GStreamer, for multimedia s
 default_variants            +gstreamer
 
 triplet.add_build           cross
+triplet.add_host            none
 
 configure.ldflags-delete    -L${compiler.library_path}
 configure.optflags          -O3
@@ -212,7 +213,7 @@ platform darwin arm {
 
 platform darwin i386 {
     try {
-        set is_rosetta2 [exec sysctl -n sysctl.proc_translated]
+        set is_rosetta2 [exec sysctl -in sysctl.proc_translated]
         if { ${is_rosetta2} != 1 } {
             ui_error "${name} requires an Apple Silicon mac"
             return -code error "unsupported platform"
