@@ -112,6 +112,10 @@ patchfiles-append \
 patchfiles-append \
     0009-preloader-sonoma.diff
 
+# special hack
+patchfiles-append \
+    9999-load-graphic-driver-hack.diff
+
 post-patch {
     # https://gitlab.winehq.org/wine/wine/-/commit/c7a97b5d5d56ef00a0061b75412c6e0e489fdc99
     reinplace -q "/PKG_CONFIG_PATH/d"       ${worksrcpath}/configure
