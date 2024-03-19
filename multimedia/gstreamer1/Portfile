@@ -540,6 +540,11 @@ subport ${name}-gst-libav {
 
     destroot {
         file mkdir ${destroot}/opt/local/lib/gstreamer-1.0
-        file copy ${workpath}/build/ext/libav/libgstlibav.dylib ${destroot}/opt/local/lib/gstreamer-1.0/libgstlibav.dylib
+        if {[variant_isset universal]} {
+            set arch [muniversal::get_build_arch]
+            file copy ${workpath}/build-${arch}/ext/libav/libgstlibav.dylib ${destroot}/opt/local/lib/gstreamer-1.0/libgstlibav.dylib
+        } else {
+            file copy ${workpath}/build/ext/libav/libgstlibav.dylib ${destroot}/opt/local/lib/gstreamer-1.0/libgstlibav.dylib
+        }
     }
 }
