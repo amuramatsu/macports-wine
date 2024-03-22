@@ -107,7 +107,6 @@ subport ${name}-gst-plugins-base {
 
     depends_build \
         port:gettext \
-        port:gl-headers \
         port:pkgconfig
 
     depends_lib \
