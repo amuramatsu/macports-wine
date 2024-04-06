@@ -13,9 +13,9 @@ A macports overlay that provides recent versions of wine on macOS.
 - `mingw-w64-wine-gecko`    *(Multiple versions)*
 - `mingw-w64-wine-mono`     *(Multiple versions)*
 - `wine-stable`             *(v9.0)*
-- `wine-devel`              *(v9.5)*
-- `wine-staging`            *(v9.5)*
-- `wine-crossover`          *(v22.1.1)*
+- `wine-devel`              *(v9.6)*
+- `wine-staging`            *(v9.6)*
+- `wine-crossover`          *(v23.7.1)*
 - `winetricks`              *(20240320)*
 
 ## Legacy wine versions
@@ -24,6 +24,7 @@ A macports overlay that provides recent versions of wine on macOS.
 - `wine-stable-7.0.2`       *(supports macOS 10.8)*
 - `wine-devel-7.22`         *(supports macOS 10.8)*
 - `wine-devel-8.21`         *(supports macOS 10.11)*
+- `wine-crossover-22`       *(supports macOS 10.13)*
 
 ## How to use this repository
 After installing macports you need a modern version of `git`\
