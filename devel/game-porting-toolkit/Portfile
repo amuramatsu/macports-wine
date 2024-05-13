@@ -4,17 +4,18 @@ PortSystem                  1.0
 PortGroup                   github 1.0
 PortGroup                   muniversal 1.1
 
+# Using custom mirror to avoid embedding huge patchfiles
 github.setup                gcenx game-porting-toolkit 1.1 Game-Porting-Toolkit-
 
 name                        game-porting-toolkit
 set my_name                 wine
-revision                    2
+revision                    3
 platforms                   {darwin >= 23}
 license                     LGPL-2.1+
 categories                  devel
 
 supported_archs             x86_64
-maintainers                 {@gcenx}
+maintainers                 {@Gcenx gmail.com:gcenx83}
 homepage                    https://developer.apple.com/games
 dist_subdir                 ${my_name}
 distname                    ${github.tag_prefix}${github.version}
@@ -30,7 +31,6 @@ checksums \
 
 depends_build \
     port:bison \
-    port:d3dmetal \
     bin:flex:flex \
     port:gettext \
     port:llvm-cx \
@@ -45,6 +45,7 @@ depends_lib \
     port:libsdl2
 
 depends_run \
+    port:d3dmetal \
     port:mingw-w64-wine-gecko-2.47.2 \
     port:mingw-w64-wine-mono-7.4.1
 
@@ -62,9 +63,16 @@ patchfiles-append \
 patchfiles-append \
     0003-mscoree-update-wine-mono-to-7.4.1.diff
 
+patchfiles-append \
+    0004-ntdll-d3dmetal-env.diff
+
+patchfiles-append \
+    1001-remove-cross_compiling-check.diff
+
 post-patch {
     # https://gitlab.winehq.org/wine/wine/-/commit/c7a97b5d5d56ef00a0061b75412c6e0e489fdc99
     reinplace -q "/PKG_CONFIG_PATH/d"       ${worksrcpath}/configure
+    reinplace -q "/PKG_CONFIG_PATH/d"       ${worksrcpath}/configure.ac
     reinplace -q "s|;(cw)||g"               ${worksrcpath}/loader/wine.inf.in
 }
 
@@ -90,10 +98,8 @@ configure.pre_args.i386 \
     --enable-win32on64 \
     --disable-loader
 
-configure.pre_args.x86_64 \
-    --enable-win64
-
 configure.args \
+    --enable-win64 \
     --disable-tests \
     --without-alsa \
     --without-capi \
@@ -128,28 +134,24 @@ configure.args \
     --without-vulkan \
     --without-x
 
-# We'll be getting these from d3dmetal
-configure.args.x86_64 \
-    --disable-d3d9 \
-    --disable-d3d10 \
-    --disable-d3d11 \
-    --disable-d3d12 \
-    --disable-dxgi
+configure.args-append \
+    --disable-winedbg \
+    --disable-winemenubuilder
 
 # We also need to tell the linker to add Macports to the rpath stack.
-configure.ldflags-append    -Wl,-rpath,${compiler.library_path} -Wl,-rpath,${prefix}/libexec/${name}/lib/external
+configure.ldflags-append    -Wl,-rpath,${compiler.library_path} -Wl,-rpath,${prefix}/libexec/d3dmetal/external
 
 # Xcode15 linker requires -ld_classic to enable legacy behaviours required to build wine
-set xcode150 [expr { ${xcodeversion} ne "none" && [vercmp ${xcodeversion} >= "15.0"] } ]
 set clt150   [expr { ${xcodeversion} eq "none" && ${xcodecltversion} ne "none" && [vercmp ${xcodecltversion} >= "15.0"] } ]
-if { ${xcode150} || ${clt150} } {
+set xcode150 [expr { ${xcodeversion} ne "none" && [vercmp ${xcodeversion} >= "15.0"] } ]
+if { ${clt150} || ${xcode150} } {
     configure.ldflags-prepend   -Wl,-ld_classic
 }
 
 # Xcode15.3 default SDK causes the build to fail so fallback to a working SDK
-set xcode153 [expr { ${xcodeversion} ne "none" && [vercmp ${xcodeversion} >= "15.3"] } ]
 set clt153   [expr { ${xcodeversion} eq "none" && ${xcodecltversion} ne "none" && [vercmp ${xcodecltversion} >= "15.3"] } ]
-if { ${xcode153} || ${clt153} } {
+set xcode153 [expr { ${xcodeversion} ne "none" && [vercmp ${xcodeversion} >= "15.3"] } ]
+if { ${clt153} || ${xcode153} } {
     configure.sdk_version       13
     if {${configure.sdkroot} eq ""} {
         depends_build-append    port:MacOSX13.sdk
@@ -162,13 +164,8 @@ if { ${xcode153} || ${clt153} } {
 macosx_deployment_target    10.14
 
 variant gstreamer description {Build ${subport} with GStreamer, for multimedia support} {
-    depends_lib-append \
-        port:gstreamer1 \
-        port:gstreamer1-gst-plugins-base \
-        port:gstreamer1-gst-plugins-good \
-        port:gstreamer1-gst-plugins-bad \
-        port:gstreamer1-gst-plugins-ugly \
-        port:gstreamer1-gst-libav
+    depends_lib-append  port:gstreamer1-gst-plugins-good port:gstreamer1-gst-plugins-bad \
+                        port:gstreamer1-gst-plugins-ugly port:gstreamer1-gst-libav
     configure.args-delete           --without-gstreamer
     configure.args.i386-append      --without-gstreamer
     configure.args.x86_64-append    --with-gstreamer
@@ -184,7 +181,10 @@ configure.optflags          -O3
 configure.env-append        CROSSCFLAGS=${configure.optflags}
 
 # Common compiler flags for both Mach-O and PE binaries.
-configure.cflags-append     -Wno-implicit-function-declaration -Wno-format -Wno-deprecated-declarations -Wno-incompatible-pointer-types
+configure.cflags-append \
+    -Wno-implicit-function-declaration \
+    -Wno-format -Wno-deprecated-declarations \
+    -Wno-incompatible-pointer-types
 
 # Were only installing wine not the development files
 destroot.target             install-lib
@@ -201,9 +201,9 @@ configure {
     set configure.dir ${worksrcpath}-x86_64
     portconfigure::configure_main
 
-    configure.pre_args.x86_64-delete --enable-win64
     configure.args.x86_64
     set configure.dir ${worksrcpath}-i386
+    configure.args-delete --enable-win64
     configure.args ${configure.pre_args.i386} ${configure.args} ${configure.args.i386}
     portconfigure::configure_main
 }
@@ -229,26 +229,20 @@ post-destroot {
     ln -sf ${prefix}/share/wine/gecko ${destroot}${prefix}/libexec/${name}/share/wine/gecko
     ln -sf ${prefix}/share/wine/mono ${destroot}${prefix}/libexec/${name}/share/wine/mono
 
-    # Install d3dmetal files into place
-    system "ditto ${prefix}/libexec/d3dmetal/redist/lib ${destroot}${prefix}/libexec/${name}/lib"
-    file rename ${destroot}${prefix}/libexec/${name}/lib/wine/x86_64-windows/_d3d9.dll  ${destroot}${prefix}/libexec/${name}/lib/wine/x86_64-windows/d3d9.dll
-    file rename ${destroot}${prefix}/libexec/${name}/lib/wine/x86_64-windows/_d3d10.dll ${destroot}${prefix}/libexec/${name}/lib/wine/x86_64-windows/d3d10.dll
-    file copy ${prefix}/libexec/d3dmetal/gameportingtoolkit             ${destroot}${prefix}/bin/gameportingtoolkit
-    file copy ${prefix}/libexec/d3dmetal/gameportingtoolkit-no-esync    ${destroot}${prefix}/bin/gameportingtoolkit-no-esync
-    file copy ${prefix}/libexec/d3dmetal/gameportingtoolkit-no-hud      ${destroot}${prefix}/bin/gameportingtoolkit-no-hud
-}
+    file copy ${filespath}/gameportingtoolkit           ${destroot}${prefix}/bin/gameportingtoolkit
+    file copy ${filespath}/gameportingtoolkit-no-esync  ${destroot}${prefix}/bin/gameportingtoolkit-no-esync
+    file copy ${filespath}/gameportingtoolkit-no-hud    ${destroot}${prefix}/bin/gameportingtoolkit-no-hud
 
-platform darwin arm {
-    patchfiles.x86_64                 1001-remove-cross_compiling-check.diff
-    configure.pre_args.x86_64-prepend [muniversal::get_triplets x86_64]
+    reinplace -q "s|@@PREFIX@@|${prefix}|g"             ${destroot}${prefix}/bin/gameportingtoolkit \
+                                                        ${destroot}${prefix}/bin/gameportingtoolkit-no-esync \
+                                                        ${destroot}${prefix}/bin/gameportingtoolkit-no-hud
 }
 
 platform darwin i386 {
     try {
         set is_rosetta2 [exec sysctl -in sysctl.proc_translated]
         if { ${is_rosetta2} != 1 } {
-            ui_error "${name} requires an Apple Silicon mac"
-            return -code error "unsupported platform"
+            supported_archs arm64
         }
     }
 }
@@ -257,6 +251,7 @@ post-deactivate {
     if {![catch {set installed [lindex [registry_active mingw-w64-wine-gecko-2.47.2] 0]}]} {
         registry_deactivate_composite mingw-w64-wine-gecko-2.47.2 "" [list ports_nodepcheck 1]
     }
+    if {![catch {set installed [lindex [registry_active mingw-w64-wine-mono-7.4.1] 0]}]} {
+        registry_deactivate_composite mingw-w64-wine-mono-7.4.1 "" [list ports_nodepcheck 1]
+    }
 }
-
-livecheck.type              none
