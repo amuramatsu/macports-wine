@@ -6,7 +6,6 @@ For older versions of macOS use the [legacy](https://github.com/Gcenx/macports-w
 ## This repository contains
 - `CrossOver`               *(24.0.3)*
 - `crossovertricks`         *(winetricks wrapper for CrossOver)*
-- `game-porting-toolkit`    *(1.1)*
 - `gstreamer1`              *(1.24.3)*
 - `gstreamer.framework`     *(stub)*
 - `gstreamer-runtime`       *(1.24.3)*
@@ -14,8 +13,6 @@ For older versions of macOS use the [legacy](https://github.com/Gcenx/macports-w
 - `libinotify`              *(20230908)*
 - `MacOSX.sdk`              *(Multiple MacOSX SDKs)*
 - `mingw-w64-pkgconfig`
-- `mingw-w64-wine-gecko`    *(Multiple versions)*
-- `mingw-w64-wine-mono`     *(Multiple versions)*
 - `wine-stable`             *(v9.0)*
 - `wine-devel`              *(v9.10)*
 - `wine-staging`            *(v9.10)*

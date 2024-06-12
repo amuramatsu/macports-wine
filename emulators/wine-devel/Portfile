@@ -110,6 +110,7 @@ configure.args \
     --without-krb5 \
     --with-mingw \
     --without-netapi \
+    --without-odbc \
     --with-opencl \
     --with-opengl \
     --without-oss \
@@ -133,9 +134,6 @@ configure.env-append    ac_cv_lib_soname_vulkan=
 configure.ldflags-append    -Wl,-rpath,${compiler.library_path}
 
 subport wine-staging {
-    name \
-        wine-staging
-
     conflicts \
         wine-stable wine-devel wine-crossover
 
@@ -201,6 +199,7 @@ muniversal.arch_flag        no
 muniversal.arch_compiler    yes
 configure.ldflags-delete    -L${compiler.library_path}
 configure.optflags          -g -O2
+# gcc14.1 now sets -Werror-incompatible-pointer-types
 configure.env-append        "CROSSCFLAGS=${configure.optflags} -Wno-incompatible-pointer-types"
 
 # Were only installing wine not the development files
