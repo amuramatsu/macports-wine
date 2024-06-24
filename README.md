@@ -8,16 +8,16 @@ For older versions of macOS use the [legacy](https://github.com/Gcenx/macports-w
 - `crossovertricks`         *(winetricks wrapper for CrossOver)*
 - `D3DMetal`                *(v2.0 beta1)*
 - `game-porting-toolkit`    *(v1.1)*
-- `gstreamer1`              *(v1.24.4)*
-- `gstreamer.framework`     *(stub)*
-- `gstreamer-runtime`       *(v1.24.4)*
-- `gstreamer-development`   *(v1.24.4)*
+- `gstreamer1`              *(v1.24.5)*
+- `gstreamer.framework`     *(v1.24.5)*
+- `gstreamer-runtime`       *(v1.24.5)*
+- `gstreamer-development`   *(v1.24.5)*
 - `libinotify`              *(v20230908)*
 - `MacOSX.sdk`              *(Multiple MacOSX SDKs)*
 - `mingw-w64-pkgconfig`
 - `wine-stable`             *(v9.0)*
-- `wine-devel`              *(v9.10)*
-- `wine-staging`            *(v9.10)*
+- `wine-devel`              *(v9.11)*
+- `wine-staging`            *(v9.11)*
 - `wine-crossover`          *(v23.7.1)*
 - `winetricks`              *(v20240320)*
 - `wineskin`                *(v2.0.2)*

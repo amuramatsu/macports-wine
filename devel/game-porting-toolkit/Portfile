@@ -55,7 +55,8 @@ patchfiles-append \
     1002-server-remove-cxhack-21217.diff \
     1003-default-win10-19043.diff \
     1004-mscoree-update-wine-mono-to-7.4.1.diff \
-    1005-ntdll-d3dmetal-env.diff
+    1005-ntdll-d3dmetal-env.diff \
+    1006-build_fixes.diff
 
 post-patch {
     reinplace -q "s|;(cw)||g"               ${worksrcpath}/loader/wine.inf.in
@@ -161,7 +162,7 @@ configure.ldflags-delete    -L${compiler.library_path}
 configure.optflags          -O3
 
 # Compiler flags for PE binaries.
-configure.env-append        "CROSSCFLAGS=${configure.optflags} -Wno-incompatible-pointer-types -Wno-int-conversion"
+configure.env-append        "CROSSCFLAGS=${configure.optflags} -Wno-error=incompatible-pointer-types -Wno-error=int-conversion"
 
 # Were only installing wine not the development files
 destroot.target             install-lib
@@ -229,3 +230,5 @@ platform darwin i386 {
         }
     }
 }
+
+livecheck   none
