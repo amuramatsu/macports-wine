@@ -199,7 +199,7 @@ subport MacOSX10.11.sdk {
 
 # Earlier SDKs contain only binaries not .tbd stubs (rev-upgrade)
 
-github.tarball_from     releases
+#github.tarball_from     releases
 
 pre-destroot {
     xinstall -d ${destroot}${sdk_dir}
