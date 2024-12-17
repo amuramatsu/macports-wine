@@ -9,14 +9,14 @@ For older versions of macOS use the [legacy](https://github.com/Gcenx/macports-w
 - `D3DMetal`                *(v2.0 beta1)*
 - `game-porting-toolkit`    *(v1.1)*
 - `gstreamer.framework`     *(v1.24.8)*
-- `gstreamer-runtime`       *(v1.24.8)*
-- `gstreamer-development`   *(v1.24.8)*
+- `gstreamer-runtime`       *(v1.24.10)*
+- `gstreamer-development`   *(v1.24.10)*
 - `libinotify`              *(v20230908)*
 - `MacOSX.sdk`              *(Multiple MacOSX SDKs)*
 - `mingw-w64-pkgconfig`
 - `wine-stable`             *(v9.0)*
-- `wine-devel`              *(v9.22)*
-- `wine-staging`            *(v9.22)*
+- `wine-devel`              *(v10.0-rc2)*
+- `wine-staging`            *(v10.0-rc2)*
 - `wine-crossover`          *(v23.7.1)*
 - `winetricks`              *(v20240704)*
 - `kegworks`                *(v2.0.3)*
