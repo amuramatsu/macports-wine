@@ -6,7 +6,7 @@ PortGroup           meson 1.0
 PortGroup           muniversal 1.1
 
 # Only commit stable updates (even numbered releases)
-gitlab.setup        gstreamer gstreamer 1.24.10
+gitlab.setup        gstreamer gstreamer 1.24.11
 name                ${gitlab.project}1
 revision            0
 
@@ -17,9 +17,9 @@ license             LGPL-2+
 homepage            https://gstreamer.freedesktop.org
 
 checksums \
-    rmd160  c6425b28262f97a6a6793da450af94b3ebb7f7ae \
-    sha256  51cdac6eb2b4368cb3c2ed3ce4679281a7028de0f80f218dc39e7629be07e100 \
-    size    27380217
+    rmd160  66f8b4cfe73cc7539ec7a61c5be857b1658844fc \
+    sha256  df174a076509d00e9a6e6b5bf54ecceb6396a4e8cfb1e20ccbda8389b06bc6bf \
+    size    27397380
 
 # https://github.com/mesonbuild/meson/issues/1889
 compiler.cxx_standard \
@@ -123,7 +123,7 @@ subport ${name}-gst-plugins-base {
 
     # Feature option for opengl plugin and integration library
     configure.args-append \
-        -Dgl=enabled \
+        -Dgl=disabled \
         -Dgl-graphene=disabled \
         -Dgl-jpeg=disabled \
         -Dgl-png=disabled
@@ -166,10 +166,10 @@ subport ${name}-gst-plugins-base {
         -Ddoc=disabled
 
     # gst-plugins-bad applemedia can't find gstglconfig.h so move it
-    post-destroot {
-        move ${destroot}${prefix}/lib/gstreamer-1.0/include/gst/gl/gstglconfig.h ${destroot}${prefix}/include/gstreamer-1.0/gst/gl/gstglconfig.h
-        reinplace "s| -I\${\libdir}\/gstreamer-1.0/include||g" ${destroot}${prefix}/lib/pkgconfig/gstreamer-gl-1.0.pc
-    }
+    #post-destroot {
+    #    move ${destroot}${prefix}/lib/gstreamer-1.0/include/gst/gl/gstglconfig.h ${destroot}${prefix}/include/gstreamer-1.0/gst/gl/gstglconfig.h
+    #    reinplace "s| -I\${\libdir}\/gstreamer-1.0/include||g" ${destroot}${prefix}/lib/pkgconfig/gstreamer-gl-1.0.pc
+    #}
 }
 
 
@@ -395,7 +395,7 @@ subport ${name}-gst-plugins-bad {
         -Dfdkaac=enabled \
         -Dflite=disabled \
         -Dfluidsynth=disabled \
-        -Dgl=enabled \
+        -Dgl=disabled \
         -Dgme=disabled \
         -Dgs=disabled \
         -Dgsm=disabled \
@@ -466,12 +466,12 @@ subport ${name}-gst-plugins-bad {
         -Disac=disabled
 
     # We put this into a pre-configure block so it can be evaluated _after_ platform selection.
-    pre-configure {
-        # applemedia requires APIs added in macOS Mojave
-        if {[vercmp $macosx_deployment_target 10.14] >= 0 } {
-            configure.args-replace -Dapplemedia=disabled -Dapplemedia=enabled
-        }
-    }
+    #pre-configure {
+    #    # applemedia requires APIs added in macOS Mojave
+    #    if {[vercmp $macosx_deployment_target 10.14] >= 0 } {
+    #        configure.args-replace -Dapplemedia=disabled -Dapplemedia=enabled
+    #    }
+    #}
 
     # HLS plugin options
     #  Leaving (auto)
