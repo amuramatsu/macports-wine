@@ -465,6 +465,15 @@ subport ${name}-gst-plugins-bad {
         -Dv4l2codecs=disabled \
         -Disac=disabled
 
+    #patchfiles          patch-gstreamer-bad-svt-av1.diff
+    #patch.pre_args      -p3
+    post-extract {
+        set patchfile      patch-gstreamer-bad-svt-av1.diff
+
+        system -W "${worksrcpath}" \
+           "patch -p3 < \"$filespath/$patchfile\""
+    }
+
     # We put this into a pre-configure block so it can be evaluated _after_ platform selection.
     #pre-configure {
     #    # applemedia requires APIs added in macOS Mojave
