@@ -6,7 +6,7 @@ PortGroup           meson 1.0
 PortGroup           muniversal 1.1
 
 # Only commit stable updates (even numbered releases)
-gitlab.setup        gstreamer gstreamer 1.24.12
+gitlab.setup        gstreamer gstreamer 1.26.0
 name                ${gitlab.project}1
 revision            0
 
@@ -17,9 +17,9 @@ license             LGPL-2+
 homepage            https://gstreamer.freedesktop.org
 
 checksums \
-    rmd160  7c7ffa215295d62eb43c4c553bf99a8d89f7d793 \
-    sha256  23c0e1de51ce96be8ef26c79f9b971a11ab82c8e6267cea8c3933ede28fba155 \
-    size    27420403
+    rmd160  dc5e1a53b818fb91cf670a1eb220792518281737 \
+    sha256  a0fa96f7fa7fc4d37db08c5a8a2007ef3baf7cc554ba54e9165bd37099182916 \
+    size    29339371
 
 # https://github.com/mesonbuild/meson/issues/1889
 compiler.cxx_standard \
@@ -367,8 +367,6 @@ subport ${name}-gst-plugins-bad {
         -Danalyticsoverlay=disabled \
         -Dandroidmedia=disabled \
         -Dapplemedia=disabled \
-        -Dasio=disabled \
-        -Dasio-sdk-path= \
         -Dassrender=disabled \
         -Dbluez=disabled \
         -Dbs2b=disabled \
@@ -464,15 +462,6 @@ subport ${name}-gst-plugins-bad {
         -Dmagicleap=disabled \
         -Dv4l2codecs=disabled \
         -Disac=disabled
-
-    #patchfiles          patch-gstreamer-bad-svt-av1.diff
-    #patch.pre_args      -p3
-    post-extract {
-        set patchfile      patch-gstreamer-bad-svt-av1.diff
-
-        system -W "${worksrcpath}" \
-           "patch -p3 < \"$filespath/$patchfile\""
-    }
 
     # We put this into a pre-configure block so it can be evaluated _after_ platform selection.
     #pre-configure {
