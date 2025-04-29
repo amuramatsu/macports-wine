@@ -17,7 +17,7 @@ A MacPorts overlay that provides recent versions of wine.
 - `wine-devel`              *(v10.6)*
 - `wine-staging`            *(v10.6)*
 - `wine-crossover`          *(v23.7.1)*
-- `winetricks`              *(v20250104)*
+- `winetricks`              *(v20250415)*
 - `kegworks`                *(v2.0.4)*
 
 <br>
