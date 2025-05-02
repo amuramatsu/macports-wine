@@ -1,25 +1,26 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
-PortGroup           gitlab 1.0
+PortGroup           github 1.0
 PortGroup           meson 1.0
 PortGroup           muniversal 1.1
 
 # Only commit stable updates (even numbered releases)
-gitlab.setup        gstreamer gstreamer 1.26.0
-name                ${gitlab.project}1
+github.setup        gstreamer gstreamer 1.26.1
+github.tarball_from archive
+name                ${github.project}1
 revision            0
 
-maintainers         {@gcenx}
+maintainers         {@amuramatsu}
 categories          multimedia
 license             LGPL-2+
 
 homepage            https://gstreamer.freedesktop.org
 
 checksums \
-    rmd160  dc5e1a53b818fb91cf670a1eb220792518281737 \
-    sha256  a0fa96f7fa7fc4d37db08c5a8a2007ef3baf7cc554ba54e9165bd37099182916 \
-    size    29339371
+    rmd160  ef419521f075b33ddf596a8fbca83136cb04e137 \
+    sha256  1cac791ecb88620cb2a8e4b615116c696c0ba8ba1e0ca8f36a9270cab554f4a2 \
+    size    37169614
 
 # https://github.com/mesonbuild/meson/issues/1889
 compiler.cxx_standard \
