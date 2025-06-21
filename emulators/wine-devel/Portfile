@@ -59,7 +59,7 @@ depends_lib \
 
 depends_run \
     port:mingw-w64-wine-gecko-2.47.4 \
-    port:mingw-w64-wine-mono-10.0.0
+    port:mingw-w64-wine-mono-10.1.0
 
 post-extract {
     # https://gitlab.winehq.org/wine/wine/-/commit/c7a97b5d5d56ef00a0061b75412c6e0e489fdc99
@@ -74,7 +74,8 @@ patchfiles-append \
     0001-winemac.drv-no-flicker-patch.diff \
     0002-winehq_macos_hacks.diff \
     0003-wined3d-cwhack-18311.diff \
-    0004-winemac.drv-export-essential-apis.diff
+    0004-winemac.drv-export-essential-apis.diff \
+    0005-wined3d-cwhack-18838.diff
 
 configure.checks.implicit_function_declaration.whitelist-append \
     __clear_cache \
