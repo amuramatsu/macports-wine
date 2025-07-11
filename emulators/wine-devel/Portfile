@@ -12,7 +12,7 @@ github.tarball_from         archive
 name                        wine-devel
 conflicts                   wine-stable wine-staging wine-crossover
 set my_name                 wine
-revision                    1
+revision                    2
 # MacPorts does not support i386 on macOS Mojave and new WoW64 requires macOS Catalina 10.15.4
 platforms                   {darwin > 15 != 18.*}
 set branch                  [lindex [split ${version} .] 0].x
