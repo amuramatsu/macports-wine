@@ -36,20 +36,27 @@ checksums               rmd160  be84049c5c75d3064e730ebf4eb59bfbdf0ab4c2 \
                         sha256  55cce02fc5c394c3b5233e4fc4bf35bfb921dbf58e85f7448161c7ef9a4a0533 \
                         size    378285570
 
+variant gstreamer description "Modify ${subport} to use GStreamer.framework" {
+    depends_run-append  port:gstreamer-runtime
+}
+
 use_configure           no
+
 build {
     # Can't remove Sparkle.framework so remove the update url
     reinplace s|https://www.codeweavers.com/xml/versions/cxmac.xml||g ${workpath}/CrossOver.app/Contents/Info.plist
 }
 
-variant gstreamer description "Modify ${subport} to use GStreamer.framework" {
-    depends_run         port:gstreamer-runtime
+post-build {
+    # Remove useless DXVK dlls
+    delete ${workpath}/CrossOver.app/Contents/SharedSupport/CrossOver/lib/dxvk/i386-windows/d3d9.dll
+    delete ${workpath}/CrossOver.app/Contents/SharedSupport/CrossOver/lib/dxvk/i386-windows/d3d10_1.dll
+    delete ${workpath}/CrossOver.app/Contents/SharedSupport/CrossOver/lib/dxvk/i386-windows/d3d10.dll
+    delete ${workpath}/CrossOver.app/Contents/SharedSupport/CrossOver/lib/dxvk/x86_64-windows/d3d9.dll
+    delete ${workpath}/CrossOver.app/Contents/SharedSupport/CrossOver/lib/dxvk/x86_64-windows/d3d10_1.dll
+    delete ${workpath}/CrossOver.app/Contents/SharedSupport/CrossOver/lib/dxvk/x86_64-windows/d3d10.dll
 
-    post-build {
-        # Replace icon
-        delete ${workpath}/CrossOver.app/Contents/Resources/CrossOver.icns
-        xinstall -m 0644 ${filespath}/CrossOver.icns ${workpath}/CrossOver.app/Contents/Resources/CrossOver.icns
-
+    if {[variant_isset gstreamer]} {
         # GStreamer
         delete ${workpath}/CrossOver.app/Contents/SharedSupport/CrossOver/lib64/libgmodule-2.0.dylib
         delete ${workpath}/CrossOver.app/Contents/SharedSupport/CrossOver/lib64/libgthread-2.0.dylib
@@ -98,7 +105,6 @@ variant gstreamer description "Modify ${subport} to use GStreamer.framework" {
         delete ${workpath}/CrossOver.app/Contents/SharedSupport/CrossOver/lib64/libgstvideo-1.0.dylib
         delete ${workpath}/CrossOver.app/Contents/SharedSupport/CrossOver/lib64/libgstfft-1.0.dylib
         delete ${workpath}/CrossOver.app/Contents/SharedSupport/CrossOver/lib64/libgstadaptivedemux-1.0.dylib
-        delete ${workpath}/CrossOver.app/Contents/SharedSupport/CrossOver/lib64/libSDL2.dylib
         delete ${workpath}/CrossOver.app/Contents/SharedSupport/CrossOver/lib64/libgmodule-2.0.0.dylib
         delete ${workpath}/CrossOver.app/Contents/SharedSupport/CrossOver/lib64/libgstbasecamerabinsrc-1.0.dylib
         delete ${workpath}/CrossOver.app/Contents/SharedSupport/CrossOver/lib64/libgstsctp-1.0.0.dylib
@@ -142,6 +148,8 @@ variant gstreamer description "Modify ${subport} to use GStreamer.framework" {
         delete ${workpath}/CrossOver.app/Contents/SharedSupport/CrossOver/lib64/gstreamer-1.0
 
         # Use GStreamer.framework
+        system -W ${workpath}/CrossOver.app/Contents/SharedSupport/CrossOver/lib/wine/x86_64-unix \
+            "/usr/bin/install_name_tool -delete_rpath @loader_path/../../../lib64 winegstreamer.so"
         system -W ${workpath}/CrossOver.app/Contents/SharedSupport/CrossOver/lib/wine/x86_64-unix \
             "/usr/bin/install_name_tool -add_rpath /Library/Frameworks/GStreamer.framework/Libraries winegstreamer.so"
     }
