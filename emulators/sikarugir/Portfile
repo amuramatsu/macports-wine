@@ -3,16 +3,15 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        Sikarugir-App Creator 1.0 v 
+github.setup        Sikarugir-App Creator 1.0.1 v
 github.tarball_from releases
 revision            0
 name                sikarugir
 platforms           {darwin >= 19}
-# Winery is LGPL-2.1 but will be changed later once the new codebase it finished
-license             LGPL-2.1
+license             Restrictive/Distributable
 categories          emulators
 
-supported_archs     x86_64
+supported_archs     arm64 x86_64
 maintainers         {@Gcenx}
 homepage            https://github.com/Sikarugir-App/Sikarugir/
 
@@ -22,15 +21,15 @@ long_description    {*}${description}
 distname            Creator-v${version}
 use_xz              yes
 
-checksums           rmd160  621334417ff0480174168073248450b2bb5cbf3d \
-                    sha256  f98d737bf4d1b5274e4a74102b8995ab57fcbb408343cb5d631a09cc4d96cb0f \
-                    size    1462908
+checksums           rmd160  babddfebd0715b35f2c2956d9dbbbac44aa31fea \
+                    sha256  fbc86992107e054cacb0d09e28f6da93648cab3e29f5e46ae2c6d77e0fa62c2e \
+                    size    793416
 
 use_configure       no
 build {}
 
 destroot {
-    move "${workpath}/Creator.app" "${destroot}${applications_dir}/Sikarugir Creator.app"
+    move "${workpath}/Sikarugir Creator.app" "${destroot}${applications_dir}/Sikarugir Creator.app"
     system -W ${destroot}${applications_dir} "/usr/bin/codesign --deep --force --sign - 'Sikarugir Creator.app'"
 }
 
@@ -39,4 +38,9 @@ pre-activate {
         ui_error "You must first update to macOS 10.15.4."
         return -code error "You must first update to macOS 10.15.4."
     }
+}
+
+if {[llength ${supported_archs}] > 1} {
+    configure.universal_archs {*}${supported_archs}
+    variant universal {}
 }
