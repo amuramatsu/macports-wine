@@ -6,7 +6,7 @@ PortGroup           meson 1.0
 PortGroup           muniversal 1.1
 
 # Only commit stable updates (even numbered releases)
-github.setup        gstreamer gstreamer 1.26.8
+github.setup        gstreamer gstreamer 1.28.0
 github.tarball_from archive
 name                ${github.project}1
 revision            0
@@ -18,9 +18,9 @@ license             LGPL-2+
 homepage            https://gstreamer.freedesktop.org
 
 checksums \
-    rmd160  d17ab85705be2bc33cd9d4a72957e20d191aefb5 \
-    sha256  fa4014bfcc64ba6ec04459b7e0812c91e9680d0dc2e972bc2123c9d2e2106930 \
-    size    37391644
+    rmd160  33fc7e984d936f4c37cb4029c58aac6e52c2d04b \
+    sha256  06629bc45465ac6676357ef10dcdd0cbe2bdafa267b37bbac35beb432f872c45 \
+    size    39691857
 
 # https://github.com/mesonbuild/meson/issues/1889
 compiler.cxx_standard \
@@ -445,6 +445,7 @@ subport ${name}-gst-plugins-bad {
         -Dttml=disabled \
         -Duvch264=disabled \
         -Dva=disabled \
+        -Dvmaf=disabled \
         -Dvoaacenc=disabled \
         -Dvoamrwbenc=disabled \
         -Dvulkan=disabled \
