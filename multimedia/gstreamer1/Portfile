@@ -9,7 +9,7 @@ PortGroup           muniversal 1.1
 github.setup        gstreamer gstreamer 1.28.0
 github.tarball_from archive
 name                ${github.project}1
-revision            0
+revision            1
 
 maintainers         {@amuramatsu}
 categories          multimedia
@@ -445,7 +445,6 @@ subport ${name}-gst-plugins-bad {
         -Dttml=disabled \
         -Duvch264=disabled \
         -Dva=disabled \
-        -Dvmaf=disabled \
         -Dvoaacenc=disabled \
         -Dvoamrwbenc=disabled \
         -Dvulkan=disabled \
