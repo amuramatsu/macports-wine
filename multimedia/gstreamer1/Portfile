@@ -6,7 +6,7 @@ PortGroup           meson 1.0
 PortGroup           muniversal 1.1
 
 # Only commit stable updates (even numbered releases)
-github.setup        gstreamer gstreamer 1.28.0
+github.setup        gstreamer gstreamer 1.28.1
 github.tarball_from archive
 name                ${github.project}1
 revision            1
@@ -18,9 +18,9 @@ license             LGPL-2+
 homepage            https://gstreamer.freedesktop.org
 
 checksums \
-    rmd160  33fc7e984d936f4c37cb4029c58aac6e52c2d04b \
-    sha256  06629bc45465ac6676357ef10dcdd0cbe2bdafa267b37bbac35beb432f872c45 \
-    size    39691857
+    rmd160  cf0db1f8dd6b180cbbd66edc5c00ceeb63f46446 \
+    sha256  97fee2ed866d087cd0f0cecbb3b955d18145bda22c8ae4d3a04603c6a055e8a6 \
+    size    39676985
 
 # https://github.com/mesonbuild/meson/issues/1889
 compiler.cxx_standard \
