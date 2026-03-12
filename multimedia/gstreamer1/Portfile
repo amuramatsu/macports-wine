@@ -9,7 +9,7 @@ PortGroup           muniversal 1.1
 github.setup        gstreamer gstreamer 1.28.1
 github.tarball_from archive
 name                ${github.project}1
-revision            1
+#revision            1
 
 maintainers         {@amuramatsu}
 categories          multimedia
@@ -21,6 +21,10 @@ checksums \
     rmd160  cf0db1f8dd6b180cbbd66edc5c00ceeb63f46446 \
     sha256  97fee2ed866d087cd0f0cecbb3b955d18145bda22c8ae4d3a04603c6a055e8a6 \
     size    39676985
+
+set py_ver          3.14
+set py_ver_nodot    [string map {. {}} ${py_ver}]
+set python.bin      ${prefix}/bin/python${py_ver}
 
 # https://github.com/mesonbuild/meson/issues/1889
 compiler.cxx_standard \
@@ -52,11 +56,16 @@ subport ${name} {
         port:bison \
         bin:flex:flex \
         port:gettext \
-        port:pkgconfig
+        port:gtk-doc \
+        port:gzip \
+        path:bin/perl:perl5 \
+        path:bin/pkg-config:pkgconfig \
+        port:python${py_ver_nodot}
 
     depends_lib \
         port:gettext-runtime \
-        path:lib/pkgconfig/glib-2.0.pc:glib2
+        path:lib/pkgconfig/glib-2.0.pc:glib2 \
+        port:libxml2
 
     configure.args-append \
         -Dgst_debug=true \
