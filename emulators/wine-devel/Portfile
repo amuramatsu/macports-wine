@@ -60,12 +60,6 @@ depends_run \
     port:mingw-w64-wine-gecko-2.47.4 \
     port:mingw-w64-wine-mono-11.2.0
 
-post-extract {
-    # https://gitlab.winehq.org/wine/wine/-/commit/c7a97b5d5d56ef00a0061b75412c6e0e489fdc99
-    reinplace -q "/PKG_CONFIG_LIBDIR/d"  ${worksrcpath}/configure
-    reinplace -q "/PKG_CONFIG_LIBDIR/d"  ${worksrcpath}/configure.ac
-}
-
 patch.pre_args-replace -p0 -p1
 
 # Upstream bug fixes here
