@@ -14,8 +14,8 @@ A MacPorts overlay that provides recent versions of wine.
 - `MacOSX.sdk`              *(Multiple MacOSX SDKs)*
 - `mingw-w64-pkgconfig`
 - `wine-stable`             *(v11.0)*
-- `wine-devel`              *(v11.14)*
-- `wine-staging`            *(v11.14)*
+- `wine-devel`              *(v11.15)*
+- `wine-staging`            *(v11.15)*
 - `winetricks`              *(v20260518)*
 - `sikarugir`               *(v1.0.1)*
 
@@ -25,17 +25,6 @@ A MacPorts overlay that provides recent versions of wine.
 After installing MacPorts you need a modern version of `git`\
 git clone the repository into /opt then follow [4.6. Local Portfile Repositories](https://guide.macports.org/#development.local-repositories)\
 Next run `port -v sync` you can now install any of the provided Ports.
-
-<br>
-
-### macOS Mojave
-Add the following into `/opt/local/etc/macports/macports.conf`
-```
-macosx_deployment_target     10.13
-macosx_sdk_version           10.13
-```
-This enables the `i386` & `x86_64` architectures thus enabling the `+universal` flag\
-Next place a copy of the `MacOSX10.13.sdk` into `/Library/Developer/CommandLineTools/SDKs/`
 
 <br>
 
