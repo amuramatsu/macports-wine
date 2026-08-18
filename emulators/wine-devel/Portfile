@@ -142,15 +142,10 @@ subport wine-staging {
 
     depends_patch-append    port:autoconf
 
-    # https://trac.macports.org/wiki/Python
-    set py_ver              3.14
-    set py_ver_nodot        [string map {. {}} ${py_ver}]
-    depends_patch-append    port:python${py_ver_nodot}
-
     # Applying staging before other patchfiles
     pre-patch {
         system -W ${worksrcpath} \
-            "${frameworks_dir}/Python.framework/Versions/${py_ver}/bin/python3 ${workpath}/wine-staging-${staging_version}/staging/patchinstall.py --all"
+            "${workpath}/wine-staging-${staging_version}/staging/patchinstall.py --all"
     }
 }
 
